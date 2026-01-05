@@ -20,6 +20,19 @@ spring:
   cache:
     type: redis
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+
+  mvc:
+    async:
+      request-timeout: 600000
+
+
+
 
 
 
@@ -28,20 +41,14 @@ resend:
 
 
 
-#google:
-#  credentials:
-#    token-store-path: /app/tokens
-#    path: credentials.json
-#  oauth:
-#    redirectUri: https://contract-image-latest.onrender.com/api/v1/googleOauth/google-callback
-#  calendar:
-#    user-id: williamekene700@gmail.com
 
 jwt:
   key: ${JWT_KEY}
 
 server:
   port: 5050
+  tomcat:
+    connection-timeout: 600000
 
 
 cloudinary:
@@ -50,10 +57,35 @@ cloudinary:
   api_secret: ${CLOUDINARY_API_SECRET}
 
 
-#AWS:
-#  REGION: eu-north-1
-#  ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-#  SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-#  S3_BUCKET_NAME: ${AWS_S3_BUCKET_NAME}
+google:
+  client-id: ${GOOGLE_CLIENT-ID}
+  client-secret: ${GOOGLE_CLIENT-SECRET}
+  redirect-uri: https://nixora-image-latest.onrender.com/api/google/callback
+
+  cloud:
+    project-id: ${GOOGLE_CLOUD_PROJECT_ID}
+    location: ${GOOGLE_CLOUD_LOCATION}
+    documentai:
+      processor-id: ${GOOGLE_CLOUD_DOCUMENTAI_PROCESSOR_ID}
+    storage:
+      bucket-name: ${GOOGLE_CLOUD_STORAGE_BUCKET_NAME}
+
+
+
+trello:
+  api-key: ${TRELLO_KEY}
+  token: ${TRELLO_TOKEN}
+  base-url: https://api.trello.com/1
+
+
+
+
+logging:
+  level:
+    root: INFO
+    com.nixora: DEBUG
+
+
+
 
 

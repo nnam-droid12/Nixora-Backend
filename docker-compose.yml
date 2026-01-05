@@ -22,11 +22,14 @@ services:
       - nixora-network
 
   app:
+
     image: techwiz1990/nixora-image:latest
     container_name: nixora-app
     build:
       context: .
       dockerfile: Dockerfile
+
+    pull_policy: build
     ports:
       - "5050:5050"
     environment:
@@ -35,8 +38,12 @@ services:
       SPRING_DATASOURCE_PASSWORD: 1234
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      # Explicitly pointing to the secret path for safety
+      GOOGLE_CLOUD_PROJECT_ID: ${GOOGLE_CLOUD_PROJECT_ID}
     volumes:
       - app-storage:/app/storage
+      # For local testing, you can mount your local key here:
+      # - ./google-key.json:/etc/secrets/google-key.json
     depends_on:
       - postgres
       - redis
@@ -49,5 +56,3 @@ networks:
 
 volumes:
   app-storage:
-
-

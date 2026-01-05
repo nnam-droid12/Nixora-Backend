@@ -40,9 +40,11 @@ public class SecurityConfiguration {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
+                        .requestMatchers("/api/google/callback").permitAll()
                         .requestMatchers("/api/v1/auth/**",  "/api/v1/forgot-password/**", "/file/**").permitAll()
-                        .requestMatchers("/api/loans/documents/**").authenticated()
-                        .requestMatchers("/api/v1/navigator/**", "/api/v1/agreements/calendar/**").authenticated()
+                        .requestMatchers("/api/loans/documents/**", "/api/loans/trace/**", "/api/google/**").authenticated()
+                        .requestMatchers("/api/loans/**", "/api/loans/query/**", "/api/reports/export/**", "/api/reports/**").authenticated()
+                        .requestMatchers("/api/loan/calendar/**", "/api/trello/**", "/api/collaboration/**", "/api/notifications").authenticated()
                 ).sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

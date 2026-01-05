@@ -32,5 +32,31 @@ public class GlobalExceptionHandler {
     public ProblemDetail UserNotFoundException(UserNotFoundException ex){
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
+
+    @ExceptionHandler(FileAlreadyExistsException.class)
+    public ProblemDetail FileAlreadyExistsException(FileAlreadyExistsException ex){
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(FileTooLargeException.class)
+    public ProblemDetail FileTooLargeException(FileTooLargeException ex){
+        return ProblemDetail.forStatusAndDetail(HttpStatus.PAYLOAD_TOO_LARGE, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidFileException.class)
+    public ProblemDetail InvalidFileException(InvalidFileException ex){
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ProblemDetail ResourceNotFoundException(ResourceNotFoundException ex){
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(TwoOrMoreLoansException.class)
+    public ProblemDetail TwoOrMoreLoansException(TwoOrMoreLoansException ex){
+        return ProblemDetail.forStatusAndDetail(HttpStatus.EXPECTATION_FAILED, ex.getMessage());
+    }
+
 }
 

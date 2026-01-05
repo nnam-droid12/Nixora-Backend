@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -38,6 +39,10 @@ public class User implements UserDetails {
 
     @OneToOne(mappedBy = "user")
     private RefreshToken refreshToken;
+
+    @Column(name = "fcm_token", length = 255)
+    private String fcmToken;
+
 
     public User(Integer userId, @NotBlank(message = "name cannot be blank") String name, @NotBlank(message = "email cannot be blank") @Email(message = "Email must be valid") String email, @NotBlank(message = "password cannot be blank") @Size(min = 6, message = "password must be 6 characters and above") String password, ForgotPassword forgotPassword, RefreshToken refreshToken) {
         this.userId = userId;
@@ -90,9 +95,6 @@ public class User implements UserDetails {
         return true;
     }
 
-    public Integer getUserId() {
-        return this.userId;
-    }
 
     public @NotBlank(message = "name cannot be blank") String getName() {
         return this.name;
@@ -100,6 +102,10 @@ public class User implements UserDetails {
 
     public @NotBlank(message = "email cannot be blank") @Email(message = "Email must be valid") String getEmail() {
         return this.email;
+    }
+
+    public Integer getUserId() {
+        return userId;
     }
 
     public ForgotPassword getForgotPassword() {
@@ -114,6 +120,10 @@ public class User implements UserDetails {
         this.userId = userId;
     }
 
+    public String getFcmToken(){
+        return this.fcmToken;
+    }
+
     public void setName(@NotBlank(message = "name cannot be blank") String name) {
         this.name = name;
     }
@@ -126,7 +136,14 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public void setForgotPassword(ForgotPassword forgotPassword) {
+    public void setFcmToken(String fcmToken){
+        this.fcmToken = fcmToken;
+    }
+
+
+
+    public void setForgotPassword(ForgotPassword forgotPassword)
+    {
         this.forgotPassword = forgotPassword;
     }
 
@@ -139,9 +156,8 @@ public class User implements UserDetails {
         if (!(o instanceof User)) return false;
         final User other = (User) o;
         if (!other.canEqual((Object) this)) return false;
-        final Object this$userId = this.getUserId();
-        final Object other$userId = other.getUserId();
-        if (this$userId == null ? other$userId != null : !this$userId.equals(other$userId)) return false;
+
+
         final Object this$name = this.getName();
         final Object other$name = other.getName();
         if (this$name == null ? other$name != null : !this$name.equals(other$name)) return false;
@@ -169,8 +185,7 @@ public class User implements UserDetails {
     public int hashCode() {
         final int PRIME = 59;
         int result = 1;
-        final Object $userId = this.getUserId();
-        result = result * PRIME + ($userId == null ? 43 : $userId.hashCode());
+
         final Object $name = this.getName();
         result = result * PRIME + ($name == null ? 43 : $name.hashCode());
         final Object $email = this.getEmail();
@@ -184,9 +199,6 @@ public class User implements UserDetails {
         return result;
     }
 
-    public String toString() {
-        return "User(userId=" + this.getUserId() + ", name=" + this.getName() + ", email=" + this.getEmail() + ", password=" + this.getPassword() + ", forgotPassword=" + this.getForgotPassword() + ", refreshToken=" + this.getRefreshToken() + ")";
-    }
 
     public static class UserBuilder {
         private Integer userId;

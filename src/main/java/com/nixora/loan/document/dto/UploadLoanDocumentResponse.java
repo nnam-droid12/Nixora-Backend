@@ -1,14 +1,22 @@
 package com.nixora.loan.document.dto;
 
-import com.nixora.loan.document.entities.DocumentStatus;
+import com.nixora.loan.document.extractor.LoanApiResponse;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.util.UUID;
 
-public record UploadLoanDocumentResponse(
-        UUID documentId,
-        DocumentStatus status,
-        String message,
-        String extractedText
-) {}
+@Data
+@AllArgsConstructor
+public class UploadLoanDocumentResponse {
+
+    private UUID documentId;
+    private UUID loanId;
+    private String documentUrl;
+    private LoanApiResponse loanData;;
+    private String status;
+    private String documentName;
+}
+
 
 

@@ -1,6 +1,9 @@
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre
+
+RUN apt-get update && apt-get install -y libc6 && rm -rf /var/lib/apt/lists/*
 
 COPY target/nixora-backend-0.0.1-SNAPSHOT.jar app.jar
 
-ENTRYPOINT ["java","-jar","/app.jar"]
+USER root
 
+ENTRYPOINT ["java", "-jar", "/app.jar"]

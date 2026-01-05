@@ -4,5 +4,6 @@ public enum DocumentStatus {
     UPLOADED,
     TEXT_EXTRACTED,
     PROCESSING,
-    FAILED
+    FAILED,
+    EDITED
 }
