@@ -13,17 +13,16 @@ import java.util.UUID;
 @Entity
 @Data
 public class CollaborationInvite {
-
     @Id
     @GeneratedValue
     private UUID id;
-
     private String token;
 
     @ManyToOne
     private User owner;
 
-    private LocalDateTime expiresAt;
+    private UUID loanId;
 
+    private LocalDateTime expiresAt;
     private boolean used = false;
 }

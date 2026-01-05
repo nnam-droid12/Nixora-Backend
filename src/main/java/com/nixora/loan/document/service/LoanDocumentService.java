@@ -133,7 +133,7 @@ public class LoanDocumentService {
 
     @Transactional(readOnly = true)
     public List<LoanDocumentResponse> getAllLoans(User user) {
-        return repository.findAllByUploadedBy(user)
+        return repository.findAllAccessible(user)
                 .stream()
                 .map(doc -> new LoanDocumentResponse(
                         doc.getId(),
@@ -147,13 +147,10 @@ public class LoanDocumentService {
     }
 
 
-
     @Transactional(readOnly = true)
     public LoanDocumentResponse getLoanById(UUID loanId, User user) {
-
-        LoanDocument doc = repository.findByLoanIdAndUploadedBy(loanId, user)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Loan not found or not owned by you: " + loanId));
+        LoanDocument doc = repository.findAccessibleLoan(loanId, user)
+                .orElseThrow(() -> new RuntimeException("Loan not found or access denied"));
 
         return new LoanDocumentResponse(
                 doc.getId(),
@@ -191,8 +188,9 @@ public class LoanDocumentService {
     @Transactional
     public LoanDocumentResponse updateField(UUID loanId, User user, UpdateLoanFieldRequest req) {
 
+
         LoanDocument doc = repository.findAccessibleLoan(loanId, user)
-                .orElseThrow(() -> new ResourceNotFoundException("Loan not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("You don't have permission to edit this loan"));
 
         LmaLoanData data = doc.getLoanData();
 

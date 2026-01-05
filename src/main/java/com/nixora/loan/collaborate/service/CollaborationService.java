@@ -23,53 +23,51 @@ public class CollaborationService {
     private final LoanDocumentRepository loanRepo;
     private final LoanCollaboratorRepository collaboratorRepo;
 
-    // Create invite
     @Transactional
-    public String createInvite(User owner) {
+    public String createInvite(User owner, UUID loanId) {
+        // Verify owner actually owns the loan before letting them invite others
+        loanRepo.findByLoanIdAndUploadedBy(loanId, owner)
+                .orElseThrow(() -> new RuntimeException("You do not own this loan"));
 
         CollaborationInvite invite = new CollaborationInvite();
         invite.setToken(UUID.randomUUID().toString());
         invite.setOwner(owner);
+        invite.setLoanId(loanId); // Set the specific loan
         invite.setExpiresAt(LocalDateTime.now().plusDays(2));
-        invite.setUsed(false);
-
         inviteRepo.save(invite);
 
+        // This is the link you send on WhatsApp
         return "https://nixora.onrender.com/invite/" + invite.getToken();
     }
 
-
     @Transactional
-    public void acceptInvite(String token, User user) {
+    public void acceptInvite(String token, User guestUser) {
+        // 1. Find the invite by token
+        CollaborationInvite invite = inviteRepo.findByTokenAndUsedFalse(token)
+                .orElseThrow(() -> new RuntimeException("Invite not found or already used"));
 
-        CollaborationInvite invite = inviteRepo
-                .findByTokenAndUsedFalse(token)
-                .orElseThrow(() -> new RuntimeException("Invalid or expired invite"));
-
+        // 2. Validate expiry
         if (invite.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Invite expired");
+            throw new RuntimeException("Invite has expired");
         }
 
-        User owner = invite.getOwner();
+        // 3. Get the specific loan ID stored in the invite
+        UUID targetLoanId = invite.getLoanId();
+        LoanDocument loan = loanRepo.findByLoanId(targetLoanId)
+                .orElseThrow(() -> new RuntimeException("The document no longer exists"));
 
-
-        List<LoanDocument> loans = loanRepo.findAllByUploadedBy(owner);
-
-        for (LoanDocument loan : loans) {
-
-            if (!collaboratorRepo.existsByLoanAndUser(loan, user)) {
-                LoanCollaborator c = new LoanCollaborator();
-                c.setLoan(loan);
-                c.setUser(user);
-                c.setCanEdit(true);
-                c.setGrantedAt(LocalDateTime.now());
-
-                collaboratorRepo.save(c);
-            }
+        // 4. Grant access to this specific loan
+        if (!collaboratorRepo.existsByLoanAndUser(loan, guestUser)) {
+            LoanCollaborator c = new LoanCollaborator();
+            c.setLoan(loan);
+            c.setUser(guestUser);
+            c.setCanEdit(true);
+            c.setGrantedAt(LocalDateTime.now());
+            collaboratorRepo.save(c);
         }
+
 
         invite.setUsed(true);
         inviteRepo.save(invite);
     }
 }
-

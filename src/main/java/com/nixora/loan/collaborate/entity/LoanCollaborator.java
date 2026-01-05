@@ -20,6 +20,7 @@ public class LoanCollaborator {
     private UUID id;
 
     @ManyToOne
+    @JoinColumn(name = "loan_document_id")
     private LoanDocument loan;
 
     @ManyToOne
