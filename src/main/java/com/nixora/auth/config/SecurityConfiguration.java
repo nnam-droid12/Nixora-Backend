@@ -43,8 +43,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/google/callback").permitAll()
                         .requestMatchers("/api/v1/auth/**",  "/api/v1/forgot-password/**", "/file/**").permitAll()
                         .requestMatchers("/api/loans/documents/**", "/api/loans/trace/**", "/api/google/**").authenticated()
-                        .requestMatchers("/api/loans/**", "/api/loans/query/**", "/api/reports/export/**", "/api/reports/**").authenticated()
-                        .requestMatchers("/api/loan/calendar/**", "/api/trello/**", "/api/collaboration/**", "/api/notifications").authenticated()
+                        .requestMatchers("/api/loans/**", "/api/loans/query/**", "/api/reports/export/**", "/api/reports/**", "/api/loan-chat/**").authenticated()
+                        .requestMatchers("/api/loan/calendar/**", "/api/trello/**", "/api/collaboration/**", "/api/notifications/**").authenticated()
                 ).sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
@@ -62,7 +62,7 @@ public class SecurityConfiguration {
                 "https://nixora.onrender.com",
                 "http://localhost:5173"
         ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
 
