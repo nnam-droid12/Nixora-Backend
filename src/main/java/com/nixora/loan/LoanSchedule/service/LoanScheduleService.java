@@ -9,17 +9,19 @@ import com.nixora.loan.document.repositories.LoanDocumentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 public class LoanScheduleService {
-
     private final LoanScheduleGenerator generator;
     private final LoanScheduleRepository repo;
-
     private final LoanDocumentRepository docRepo;
-    private final PushNotificationService pushService;
+    private final PushNotificationService pushService; // Add this
 
     public LoanScheduleService(LoanScheduleGenerator g,
-                               LoanScheduleRepository r, LoanDocumentRepository docRepo, PushNotificationService pushService) {
+                               LoanScheduleRepository r,
+                               LoanDocumentRepository docRepo,
+                               PushNotificationService pushService) {
         this.generator = g;
         this.repo = r;
         this.docRepo = docRepo;
@@ -28,25 +30,27 @@ public class LoanScheduleService {
 
     @Transactional
     public void generateAndStore(LoanDocument doc) {
-
         var events = generator.generate(doc);
-
-        User user = doc.getUploadedBy();
-
-        pushService.send(user,
-                "Loan schedule created",
-                "Your loan schedule has been generated for " +
-                        doc.getOriginalFileName()
-        );
-
         repo.saveAll(events);
+
     }
-
-
 
     @Transactional
     public void regenerate(LoanDocument doc) {
         repo.deleteByLoanId(doc.getLoanId());
         generateAndStore(doc);
     }
+
+    public void notifyScheduleCreation(UUID loanId, User user) {
+        docRepo.findByLoanId(loanId).ifPresent(doc -> {
+            pushService.send(user,
+                    "Schedule Created",
+                    user.getName() + ", you just created a schedule for " +
+                            doc.getOriginalFileName() + ". You can now add it to your Google Calendar!"
+            );
+        });
+    }
 }
+
+
+

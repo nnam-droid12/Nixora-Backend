@@ -60,7 +60,9 @@ public class SecurityConfiguration {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
                 "https://nixora.onrender.com",
-                "http://localhost:5173"
+                "http://localhost:5173",
+                "chrome-extension://*",
+                "chrome-extension://fjjgdgfpmpjfljlppfdgbhlfbkchkaaj"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));

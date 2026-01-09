@@ -27,27 +27,18 @@ public class PushNotificationService {
 
         Message message = Message.builder()
                 .setToken(user.getFcmToken())
-                .setNotification(Notification.builder().setTitle(title).setBody(body).build())
+                .setNotification(Notification.builder()
+                        .setTitle(title)
+                        .setBody(body)
+                        .build())
                 .build();
 
         try {
+
             String response = FirebaseMessaging.getInstance().send(message);
-            log.info("Successfully sent message: " + response);
+            log.info("Successfully sent message to {}. FCM Response: {}", user.getEmail(), response);
         } catch (Exception e) {
             log.error("Error sending FCM message to user {}: {}", user.getEmail(), e.getMessage());
-        }
-
-        try {
-
-            if (FirebaseApp.getApps().isEmpty()) {
-                log.error("FCM Send Failed: No FirebaseApp initialized at runtime.");
-                return;
-            }
-
-            FirebaseMessaging.getInstance().send(message);
-            log.info("Push sent to {}", user.getEmail());
-        } catch (Exception e) {
-            log.error("Firebase send error: {}", e.getMessage());
         }
     }
 }
