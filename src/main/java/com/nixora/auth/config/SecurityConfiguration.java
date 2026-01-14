@@ -58,20 +58,25 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(
+
+        // Use setAllowedOriginPatterns instead of setAllowedOrigins
+        // This allows any chrome-extension ID to bypass CORS
+        configuration.setAllowedOriginPatterns(Arrays.asList(
                 "https://nixora.onrender.com",
                 "http://localhost:5173",
                 "chrome-extension://*",
                 "chrome-extension://fjjgdgfpmpjfljlppfdgbhlfbkchkaaj"
         ));
+
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(true); // Required for sending JWT/cookies
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 
 
 }

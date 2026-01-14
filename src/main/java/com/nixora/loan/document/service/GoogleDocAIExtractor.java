@@ -6,7 +6,6 @@ import com.google.cloud.documentai.v1.*;
 import com.google.cloud.storage.*;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -58,7 +57,7 @@ public class GoogleDocAIExtractor {
                 .setEndpoint(endpoint)
                 .build();
 
-        StringBuilder fullText = new StringBuilder(); // Declared at method level scope
+        StringBuilder fullText = new StringBuilder();
 
         try (DocumentProcessorServiceClient client = DocumentProcessorServiceClient.create(settings)) {
             String processorName = ProcessorName.of(projectId, location, processorId).toString();

@@ -1,10 +1,11 @@
 package com.nixora.loan.chat.service;
 
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.vertexai.VertexAI;
-import com.google.cloud.vertexai.api.GenerateContentResponse;
-import com.google.cloud.vertexai.generativeai.GenerativeModel;
-import com.google.cloud.vertexai.generativeai.ResponseHandler;
+import com.google.genai.Client;
+import com.google.genai.types.GenerateContentConfig;
+import com.google.genai.types.GenerateContentResponse;
+import com.google.genai.types.ThinkingConfig;
+import com.google.genai.types.ThinkingLevel;
 import com.nixora.auth.entities.User;
 import com.nixora.loan.document.entities.LoanDocument;
 import com.nixora.loan.document.repositories.LoanDocumentRepository;
@@ -31,20 +32,27 @@ public class LoanChatService {
                 .orElseThrow(() -> new RuntimeException("Loan not found or access denied"));
 
         String context = doc.getExtractedText();
+
         String keyPath = "/etc/secrets/google-key.json";
 
         GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(keyPath))
                 .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
 
-        try (VertexAI vertexAI = new VertexAI.Builder()
-                .setProjectId(projectId)
-                .setLocation("us-central1")
-                .setCredentials(credentials)
-                .build()) {
 
-            GenerativeModel model = new GenerativeModel("gemini-2.0-flash-001", vertexAI);
+        Client client = Client.builder()
+                .project(projectId)
+                .location("global")
+                .credentials(credentials)
+                .vertexAI(true)
+                .build();
 
-            // 2. Build a "Grounded" prompt
+        GenerateContentConfig config = GenerateContentConfig.builder()
+                .thinkingConfig(ThinkingConfig.builder()
+                        .thinkingLevel("high")
+                        .build())
+                .build();
+
+
             String prompt = String.format(
                     "You are an expert loan assistant. Answer the user's question strictly using the provided loan document context. " +
                             "If the information is not in the text, say you don't know.\n\n" +
@@ -53,8 +61,12 @@ public class LoanChatService {
                     context, question
             );
 
-            GenerateContentResponse response = model.generateContent(prompt);
-            return ResponseHandler.getText(response);
+
+        GenerateContentResponse response = client.models.generateContent(
+                "gemini-3-pro-preview",
+                prompt,
+                config
+        );
+        return response.text();
         }
     }
-}
